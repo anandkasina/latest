@@ -4,53 +4,49 @@ provider vault{
 
 }
 resource "aws_iam_role" "role" {
-  name = "test_role"
+  name = "test-role"
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
       },
-    ]
-  })
-
-  tags = {
-    tag-key = "tag-value"
-  }
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 
-resource "aws_iam_policy" "policy1" {
-  name        = "test_policy"
-  path        = "/"
-  description = "My test policy"
+resource "aws_iam_policy" "policy" {
+  name        = "test-policy"
+  description = "A test policy"
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "ec2:Describe*",
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-    ]
-  })
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ec2:Describe*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
-resource "aws_iam_role_policy_attachment" "attachment" {
+resource "aws_iam_role_policy_attachment" "test-attach" {
   role       = aws_iam_role.role.name
-  policy_arn = data.aws_iam_policy.policy1.policy
+  policy_arn = aws_iam_policy.policy.arn
+}
 }
 
 resource "vault_aws_secret_backend" "aws" {
