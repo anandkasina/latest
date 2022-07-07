@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "test-attach" {
   role       = aws_iam_role.role.name
   policy_arn = aws_iam_policy.policy.arn
 }
-}
+
 
 resource "vault_aws_secret_backend" "aws" {
   access_key = "AKIAWCLFHFHVC7AJ6P5D"
